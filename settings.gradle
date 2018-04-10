@@ -1,1 +1,1 @@
-include ':app', ':test', ':plugin', ':shape', ':Utils', ':kot'
+include ':app', ':test', ':plugin', ':Utils'
