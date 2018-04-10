@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="48dp"
+    android:layout_height="match_parent"
+    android:background="@drawable/item_pressed_bg">
+    <ImageView
+        android:id="@+id/plugin_icon"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        />
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:id="@+id/plugin_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textSize="18sp"/>
+
+</LinearLayout>

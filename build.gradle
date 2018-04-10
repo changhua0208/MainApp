@@ -1,0 +1,57 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+//apply from: "config.gradle"
+
+buildscript {
+    apply from: "config.gradle"
+    //rootProject.ext.kotlin.version = '1.2.21'
+    apply from: "config.gradle"
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+
+        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin.version}"
+        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+def find = false
+//查找所有的task看看有没有app的task，如果有，说明是运行了宿主程序
+Set<String> taskNames = gradle.startParameter.getTaskNames()
+for(int i = 0;i < taskNames.size();i++){
+    String name = taskNames.getAt(i)
+    if(name.contains(":app:")){
+        find = true
+        break
+    }
+}
+if(find){
+    println("=================================================")
+    println "$runtime code ${runtime.hashCode()}"
+    runtime.isMain = true
+    println "$runtime code ${runtime.hashCode()}"
+    println("=================================================")
+}
+else{
+    println("=================================================")
+    println "$runtime code ${runtime.hashCode()}"
+    runtime.isMain = false
+    println "$runtime code ${runtime.hashCode()}"
+    println("=================================================")
+}

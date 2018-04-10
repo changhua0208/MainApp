@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+
+//生成的apk名称
+ext.apkName="test"
+//在as中的module名称
+ext.moduleName="test"
+
+apply from:"../common.gradle"
+apply from:"../config.gradle"
+
+def appId="com.jch.test"
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    defaultConfig {
+        applicationId "${appId}"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi',"x86"
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-Wno-error=format-security"
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation(rootProject.ext.dependency.appcompatV7)
+    implementationInner(rootProject.ext.dependency.plugin)
+}

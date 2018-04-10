@@ -1,0 +1,30 @@
+rootProject.ext {
+    android = [
+            'compileSdkVersion': 24,
+            'buildToolsVersion': "26.0.2",
+            'minSdkVersion'    : 14,
+            'targetSdkVersion' : 24,
+    ]
+
+    dependency = [
+            'appcompatV7'      : 'com.android.support:appcompat-v7:24.+',
+            'recycler'         : 'com.android.support:recyclerview-v7:24.+',
+            'utils'            : project(':Utils'),
+            'plugin'           : project(':plugin'),
+            "okhttp3"          : 'com.squareup.okhttp3:okhttp:3.3.1',
+            "fastjson"         : 'com.alibaba:fastjson:1.1.68.android'
+    ]
+
+    kotlin = [
+            'version'          : '1.2.21'
+    ]
+}
+
+class Runtime {
+    static boolean isMain = false
+
+    String toString(){
+        "is main ${isMain}"
+    }
+}
+ext.runtime = new Runtime()

@@ -1,0 +1,79 @@
+apply from:"../config.gradle"
+
+def isMainApp(){
+    println "$runtime code ${runtime.hashCode()}"
+    return runtime.isMain
+}
+
+ext.implementationInner = { dependency ->
+    if(isMainApp()) {
+        println("+++++++++compileOnly++++++++++++++++")
+        dependencies.invokeMethod('compileOnly', dependency)
+    }
+    else{
+        println("+++++++++implementation++++++++++++++++")
+        dependencies.invokeMethod('implementation',dependency)
+    }
+}
+
+ext.apiInner = { dependency ->
+    if(isMainApp()) {
+        println("+++++++++compileOnly++++++++++++++++")
+        dependencies.invokeMethod('compileOnly', "$dependency")
+    }
+    else{
+        println("+++++++++implementation++++++++++++++++")
+        dependencies.invokeMethod('api',"$dependency")
+    }
+}
+
+
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "${apkName}.apk"
+    }
+}
+
+task copyPluginsDebug {
+    doLast {
+        println "${rootProject.rootDir}/${moduleName}/build/outputs/apk/debug/${apkName}.apk"
+        copy {
+            from "${rootProject.rootDir}/${moduleName}/build/outputs/apk/debug/${apkName}.apk"
+            into "${rootProject.rootDir}/app/src/main/assets"
+            rename("${apkName}.apk", "${apkName}")
+        }
+    }
+}
+
+task copyPluginsRelease {
+    doLast {
+        println "${rootProject.rootDir}/${moduleName}/build/outputs/apk/release/${apkName}.apk"
+        copy {
+            from "${rootProject.rootDir}/${moduleName}/build/outputs/apk/release/${apkName}.apk"
+            into "${rootProject.rootDir}/app/src/main/assets"
+            rename("${apkName}.apk", "${apkName}")
+        }
+    }
+}
+
+
+task deletePlugin(){
+    doLast {
+        println("delete ${rootProject.rootDir}/app/src/main/assets/${apkName}")
+        delete "${rootProject.rootDir}/app/src/main/assets/${apkName}"
+    }
+}
+//android.applicationVariants.
+
+clean.finalizedBy deletePlugin
+
+android.applicationVariants.all { variant ->
+    def buildType = variant.name.capitalize()
+    def assembleTask = tasks.findByName("assemble${buildType}")
+    def copyTask = tasks.findByName("copyPlugins${buildType}")
+    println buildType
+    //只有在有宿主程序运行时，才需要copy
+    if(isMainApp()){
+        assembleTask.finalizedBy copyTask
+    }
+}

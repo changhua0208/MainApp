@@ -1,0 +1,20 @@
+<resources>
+
+
+
+    <string name="app_name">Test</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="menu_settings">Settings</string>
+    <string name="s1">打开Activity</string>
+    <string name="s2">调用动态库</string>
+    <string name="s3">解析Manifest</string>
+    <string name="s4">scheme启动activity</string>
+    <string name="s5">test</string>
+    <string name="s6">test</string>
+    <string name="s7">test</string>
+    <string name="test_s8">test</string>
+
+
+</resources>

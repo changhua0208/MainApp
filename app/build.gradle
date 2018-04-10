@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply from: "../config.gradle"
+
+//println("rootProject.ext.kotlin.version = ${rootProject.ext.kotlin.version}")
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    defaultConfig {
+        applicationId "com.jch.main"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            //也可以有多个v7a 64等等等
+            abiFilters 'armeabi',"x86"
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+    }
+    buildTypes {
+        debug{
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //CpuFrameworkHelper 的so文件
+    //原本的动态库是放在plugin中的，但是为了子apk体积(使用compileOnly，但是compileOnly不适用与aar)，只能提到这里
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+
+    sourceSets{
+         main.java.srcDirs += "src/main/kotlin"
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation rootProject.ext.dependency.utils
+    implementation rootProject.ext.dependency.plugin
+    api rootProject.ext.dependency.appcompatV7
+    api rootProject.ext.dependency.recycler
+    api rootProject.ext.dependency.okhttp3
+    api rootProject.ext.dependency.fastjson
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:${rootProject.ext.kotlin.version}"
+}
+repositories {
+    mavenCentral()
+}
