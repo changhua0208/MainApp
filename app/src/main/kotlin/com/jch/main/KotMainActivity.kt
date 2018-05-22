@@ -46,7 +46,7 @@ class KotMainActivity : Activity() {
         val MSG_ERROR = 400
         val MSG_SUCCESS = 500
         val REQUST_PERMISSION = 100
-        val URL = "http://www.changhua0208.cn/test/"
+        val URL = "http://139.199.39.133/test/"
     }
 
     val handler = object : Handler() {
