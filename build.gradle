@@ -3,8 +3,6 @@
 
 buildscript {
     apply from: "config.gradle"
-    //rootProject.ext.kotlin.version = '1.2.21'
-    apply from: "config.gradle"
     repositories {
         google()
         jcenter()
@@ -12,7 +10,7 @@ buildscript {
     dependencies {
 
         classpath 'com.android.tools.build:gradle:3.0.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin.version}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin.version}"
         //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong

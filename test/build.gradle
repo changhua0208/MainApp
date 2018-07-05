@@ -11,13 +11,13 @@ apply from:"../config.gradle"
 def appId="com.jch.test"
 
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
-    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    compileSdkVersion ac.compileSdkVersion
+    buildToolsVersion ac.buildToolsVersion
 
     defaultConfig {
         applicationId "${appId}"
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        minSdkVersion ac.minSdkVersion
+        targetSdkVersion ac.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -50,6 +50,8 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation(rootProject.ext.dependency.appcompatV7)
-    implementationInner(rootProject.ext.dependency.plugin)
+    implementation dep.appcompatV7
+    implementationInner dep.plugin
+    implementation  dep.butterKnife
+    annotationProcessor dep.butterKnifeApt
 }

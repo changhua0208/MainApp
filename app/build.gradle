@@ -3,15 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "../config.gradle"
 
-//println("rootProject.ext.kotlin.version = ${rootProject.ext.kotlin.version}")
-
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
-    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    compileSdkVersion ac.compileSdkVersion
+    buildToolsVersion ac.buildToolsVersion
     defaultConfig {
         applicationId "com.jch.main"
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        minSdkVersion ac.minSdkVersion
+        targetSdkVersion ac.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -52,13 +50,13 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation rootProject.ext.dependency.utils
-    implementation rootProject.ext.dependency.plugin
-    api rootProject.ext.dependency.appcompatV7
-    api rootProject.ext.dependency.recycler
-    api rootProject.ext.dependency.okhttp3
-    api rootProject.ext.dependency.fastjson
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:${rootProject.ext.kotlin.version}"
+    implementation dep.utils
+    implementation dep.plugin
+    api dep.appcompatV7
+    api dep.recycler
+    api dep.okhttp3
+    api dep.fastjson
+    api dep.depKotlin
 }
 repositories {
     mavenCentral()
