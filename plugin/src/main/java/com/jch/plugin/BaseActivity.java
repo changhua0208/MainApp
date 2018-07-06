@@ -24,7 +24,7 @@ import com.jch.plugin.model.PluginInfo;
 
 public class BaseActivity extends Activity {
     protected PluginInfo mPluginInfo;
-    private Resources.Theme mThemeNew;
+    private Resources.Theme mTheme;
     private Resources mResource;
     private AssetManager mAssetManager;
 
@@ -33,12 +33,11 @@ public class BaseActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent in = getIntent();
-        mPluginInfo = in.getParcelableExtra("PLUGIN");
-        if (mPluginInfo != null) {
+        if (in != null && (mPluginInfo = in.getParcelableExtra("PLUGIN")) != null) {
             replaceClassLoader();
             mAssetManager = createAssetManager();
             mResource = createResourceInner();
-            mThemeNew = createThemeInner();
+            mTheme = createThemeInner();
             //replaceResource();
             //replaceTheme();
         }
@@ -127,7 +126,7 @@ public class BaseActivity extends Activity {
     }
 
     private void replaceTheme(){
-        ReflectUtils.setFieldValue("android.view.ContextThemeWrapper",this,"mTheme", mThemeNew);
+        ReflectUtils.setFieldValue("android.view.ContextThemeWrapper",this,"mTheme", mTheme);
     }
 
     @Override
@@ -142,11 +141,11 @@ public class BaseActivity extends Activity {
 
     @Override
     public Resources.Theme getTheme() {
-        if(mThemeNew == null) {
+        if(mTheme == null) {
             return super.getTheme();
         }
         else{
-            return mThemeNew;
+            return mTheme;
         }
     }
 

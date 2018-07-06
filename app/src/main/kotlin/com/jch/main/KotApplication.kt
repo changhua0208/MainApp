@@ -1,16 +1,14 @@
 package com.jch.main
 
-import android.app.Application
-import com.jch.plugin.PluginTools
+import com.jch.plugin.ShellApplication
 
 /**
  *
  * @author changhua.jiang
  * @since 2018/2/27 下午3:22
  */
-class KotApplication : Application() {
+class KotApplication : ShellApplication() {
     override fun onCreate() {
         super.onCreate()
-        PluginTools.init(this)
     }
 }

@@ -1,11 +1,12 @@
 package com.jch.main
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -19,9 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
-import com.jch.plugin.ProxyActivity
-import com.jch.plugin.axml.AXmlHolder
-import com.jch.plugin.hook.AMSHookHelper
+import com.jch.plugin.ShellActivity
 import com.jch.plugin.model.PluginInfo
 import com.jch.utils.FileHelper
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,10 +35,10 @@ import java.io.IOException
  * @author changhua.jiang
  * @since 2018/2/27 下午3:30
  */
-class KotMainActivity : Activity() {
+class KotMainActivity : ShellActivity() {
     val mPluginInfos : MutableList<PluginInfo>  = ArrayList()
-    val PLUGIN_PATH = Environment.getExternalStorageDirectory().absolutePath
     val mAdapter = PluginListAdapter(this)
+    //var progressDlg : ProgressDialog? = null
     var mPermission = false
 
     companion object {
@@ -57,13 +56,21 @@ class KotMainActivity : Activity() {
                     val strJson = msg.data.getString("PLUGINS")
                     val array  = JSON.parseArray(strJson, HashMap::class.java)
                     for(map in array){
-                        val plugin = PluginInfo()
-                        plugin.apkName = map.get("name") as String
-                        plugin.className = map.get("launcher") as String
-                        plugin.icon = map.get("icon") as String
-                        plugin.packageName = map.get("packageName") as String
-                        plugin.apkPath = PLUGIN_PATH + "/" + map.get("apkPath") as String
-                        plugin.parent = this.javaClass.name
+
+                        val apkName = map.get("name") as String
+                        val className = map.get("launcher") as String
+                        val icon = map.get("icon") as String
+                        val packageName = map.get("packageName") as String
+                        val apkPath = map.get("apkPath") as String
+                        val parent = this.javaClass.name
+                        val plugin = PluginInfo.Builder(pluginRootPath)
+                                .setApkName(apkName)
+                                .setClassName(className)
+                                .setIcon(icon)
+                                .setPackageName(packageName)
+                                .setApkPath(apkPath)
+                                .setParent(parent)
+                                .create();
                         mPluginInfos.add(plugin)
                     }
 
@@ -81,6 +88,7 @@ class KotMainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //progressDlg = ProgressDialog(this)
         rv_plugin_list.layoutManager = LinearLayoutManager(this)
         rv_plugin_list.adapter = mAdapter
         checkPermissions()
@@ -176,14 +184,15 @@ class KotMainActivity : Activity() {
                             val nativeLib = xmlParser.getAttributeValue(null, "nativeLib")
                             val icon = xmlParser.getAttributeValue(null, "icon")
                             val packageName = xmlParser.getAttributeValue(null, "packageName")
-                            val pluginInfo = PluginInfo()
-                            pluginInfo.apkName = name
-                            //File apkDir = createDirIfNotExists(apkPath);
-                            pluginInfo.apkPath = PLUGIN_PATH + "/" + apkPath
-                            pluginInfo.className = launcher
-                            pluginInfo.packageName = packageName
-                            pluginInfo.parent = this.javaClass.name
-                            pluginInfo.icon = icon
+                            val pluginInfo = PluginInfo.Builder(pluginRootPath)
+                                    .setApkName(name)
+                                    .setApkPath(apkPath)
+                                    .setIcon(icon)
+                                    .setPackageName(packageName)
+                                    .setClassName(launcher)
+                                    .setParent(this.javaClass.name)
+                                    .create()
+
                             mPluginInfos.add(pluginInfo)
                         }
                     XmlPullParser.END_TAG -> {
@@ -206,7 +215,6 @@ class KotMainActivity : Activity() {
             val input = assets.open(plugin.apkName)
             FileHelper.copyFileFrom(input,plugin.apkUri)
             input.close()
-            AXmlHolder.init(plugin)
         }
     }
 
@@ -214,12 +222,6 @@ class KotMainActivity : Activity() {
         var dir = File(path)
         if(!dir.exists())
             dir.mkdir()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        AMSHookHelper.hookActivityManagerNative()
-        AMSHookHelper.hookActivityThreadHandler()
     }
 
     class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
@@ -241,7 +243,9 @@ class KotMainActivity : Activity() {
             holder?.tv?.text = info.apkUri
             holder?.img?.setImageResource(getIcon(info.icon))
             holder?.itemView?.setOnClickListener {
-                onLoadApk(info)
+                if (this@KotMainActivity.mPermission) {
+                    loadApp(info)
+                }
             }
         }
 
@@ -268,14 +272,6 @@ class KotMainActivity : Activity() {
 
             return resId
         }
-
-        fun onLoadApk(info: PluginInfo) {
-            if (this@KotMainActivity.mPermission) {
-                val intent = Intent(mContext, ProxyActivity::class.java)
-                //            intent.setComponent(new ComponentName(info.getPackageName(),info.getPackageName() + "." + info.getClassName()));
-                intent.putExtra("PLUGIN", info)
-                mContext.startActivity(intent)
-            }
-        }
     }
+
 }

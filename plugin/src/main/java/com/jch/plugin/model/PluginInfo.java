@@ -24,8 +24,17 @@ public class PluginInfo extends ApkPluginInfo implements Cloneable{
         className = in.readString();
     }
 
-    public PluginInfo(){
+    protected PluginInfo(){
 
+    }
+
+    public PluginInfo(Builder builder){
+        this.apkName = builder.apkName;
+        this.apkPath = builder.apkPath;
+        this.icon = builder.icon;
+        this.packageName = builder.packageName;
+        this.parent = builder.parent;
+        this.className = builder.className;
     }
 
     public static final Creator<PluginInfo> CREATOR = new Creator<PluginInfo>() {
@@ -102,5 +111,55 @@ public class PluginInfo extends ApkPluginInfo implements Cloneable{
         pluginInfo.setApkPath(apkPath);
         pluginInfo.setApkName(apkName);
         return pluginInfo;
+    }
+
+    public static class Builder{
+
+        private String rootDir;
+        private String apkName;
+        private String apkPath;
+        private String icon;
+        private String packageName;
+        private String parent;
+        private String className;
+
+        public Builder(String rootDir){
+            this.rootDir = rootDir;
+        }
+
+        public Builder setApkName(String apkName) {
+            this.apkName = apkName;
+            return this;
+        }
+
+        public Builder setApkPath(String apkPath) {
+            this.apkPath = rootDir + "/" + apkPath;
+            return this;
+        }
+
+        public Builder setIcon(String icon) {
+            this.icon = icon;
+            return this;
+        }
+
+        public Builder setPackageName(String packageName) {
+            this.packageName = packageName;
+            return this;
+        }
+
+        public Builder setParent(String parent) {
+            this.parent = parent;
+            return this;
+        }
+
+        public Builder setClassName(String className) {
+            this.className = className;
+            return this;
+        }
+
+        public PluginInfo create(){
+            PluginInfo pluginInfo = new PluginInfo(this);
+            return pluginInfo;
+        }
     }
 }

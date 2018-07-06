@@ -1,7 +1,6 @@
 package com.jch.main;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -22,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jch.plugin.ProxyActivity;
+import com.jch.plugin.ShellActivity;
 import com.jch.plugin.axml.AXmlHolder;
-import com.jch.plugin.hook.AMSHookHelper;
 import com.jch.plugin.model.PluginInfo;
 import com.jch.utils.FileHelper;
 
@@ -41,7 +40,7 @@ import java.util.regex.Pattern;
 
 
 @Deprecated
-public class MainActivity extends Activity {
+public class MainActivity extends ShellActivity {
 
     private boolean accessable = false;
     private static final int PERMISSION_CODE = 100;
@@ -63,13 +62,6 @@ public class MainActivity extends Activity {
         //dalvik ，2.2开始，采用jit策略，优化dvm，4.4 dvm与art共存 5.0 只余下采用aot策略的art
         isVmArt();
         checkPermission();
-    }
-
-    @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        AMSHookHelper.hookActivityManagerNative();
-        AMSHookHelper.hookActivityThreadHandler();
     }
 
     private void checkPermission(){
@@ -215,14 +207,14 @@ public class MainActivity extends Activity {
                             String nativeLib = xmlParser.getAttributeValue(null,"nativeLib");
                             String icon = xmlParser.getAttributeValue(null,"icon");
                             String packageName = xmlParser.getAttributeValue(null,"packageName");
-                            PluginInfo pluginInfo = new PluginInfo();
-                            pluginInfo.setApkName(name);
-                            //File apkDir = createDirIfNotExists(apkPath);
-                            pluginInfo.setApkPath(PLUGIN_PATH + "/" + apkPath);
-                            pluginInfo.setClassName(launcher);
-                            pluginInfo.setPackageName(packageName);
-                            pluginInfo.setParent(this.getClass().getName());
-                            pluginInfo.setIcon(icon);
+                            PluginInfo pluginInfo = new PluginInfo.Builder(getPluginRootPath())
+                                    .setApkName(name)
+                                    .setApkPath(apkPath)
+                                    .setClassName(launcher)
+                                    .setIcon(icon)
+                                    .setPackageName(packageName)
+                                    .setParent(this.getClass().getName())
+                                    .create();
                             pluginInfos.add(pluginInfo);
                         }
                         break;

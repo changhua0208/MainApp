@@ -19,18 +19,26 @@ public class ClassLoaderCreator {
 
     public synchronized static ClassLoader create(Context context,ClassLoader parent,ApkPluginInfo info){
         if(info != null) {
-            PluginClassLoader cl = clMap.get(info.getApkUri());
-            if(cl == null) {
-                String dexPath = context.getDir("dexOutput", Context.MODE_PRIVATE).getAbsolutePath();//context.getExternalCacheDir().getAbsolutePath();//Environment.getExternalStorageDirectory().getAbsolutePath() + "/dexOutput";
-                String libPath = context.getDir("libOutput", Context.MODE_PRIVATE).getAbsolutePath();
-//                cl = new PluginClassLoader(info.getApkUri(), dexPath, info.getApkName() + ".apk!/"+ info.getApkPath() + "/", parent);
-                cl = new PluginClassLoader(info.getApkUri(),dexPath,libPath,parent);
-                clMap.put(info.getApkUri(),cl);
-            }
+            PluginClassLoader cl = loadPlugin(context,parent,info);
             return cl;
         }
         else{
             return parent;
         }
+    }
+
+    public static PluginClassLoader loadPlugin(Context context, ClassLoader parent, ApkPluginInfo info){
+        PluginClassLoader cl = clMap.get(info.getApkUri());
+        if(cl == null) {
+            String dexPath = context.getDir("dexOutput", Context.MODE_PRIVATE).getAbsolutePath();//context.getExternalCacheDir().getAbsolutePath();//Environment.getExternalStorageDirectory().getAbsolutePath() + "/dexOutput";
+            String libPath = context.getDir("libOutput", Context.MODE_PRIVATE).getAbsolutePath();
+            cl = new PluginClassLoader(info.getApkUri(),dexPath,libPath,parent);
+            clMap.put(info.getApkUri(),cl);
+        }
+        return cl;
+    }
+
+    public static boolean isClassLoaderExists(ApkPluginInfo info){
+        return clMap.get(info.getApkUri()) == null ? false : true;
     }
 }
