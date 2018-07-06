@@ -1,13 +1,11 @@
 package com.jch.main;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jch.plugin.ProxyActivity;
 import com.jch.plugin.ShellActivity;
 import com.jch.plugin.axml.AXmlHolder;
 import com.jch.plugin.model.PluginInfo;
@@ -35,16 +32,13 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
-@Deprecated
+
 public class MainActivity extends ShellActivity {
 
     private boolean accessable = false;
     private static final int PERMISSION_CODE = 100;
-    private final String PLUGIN_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
     private List<PluginInfo> pluginInfos = new ArrayList<>();
     private RecyclerView listView;
     private PluginListAdapter adapter;
@@ -60,7 +54,8 @@ public class MainActivity extends ShellActivity {
         listView.setAdapter(adapter);
 
         //dalvik ，2.2开始，采用jit策略，优化dvm，4.4 dvm与art共存 5.0 只余下采用aot策略的art
-        isVmArt();
+        //isVmArt();
+
         checkPermission();
     }
 
@@ -73,7 +68,6 @@ public class MainActivity extends ShellActivity {
                 adapter.notifyDataSetChanged();
                 for (PluginInfo info : pluginInfos) {
                     preparePlugin(info);
-                    AXmlHolder.init(info);
                 }
             } else {
                 ActivityCompat.requestPermissions(this, permissions, PERMISSION_CODE);
@@ -90,12 +84,9 @@ public class MainActivity extends ShellActivity {
         }
     }
 
-    public void onLoadApk(PluginInfo info ){
+    public void onLoadApp(PluginInfo info ){
         if(accessable) {
-            Intent intent = new Intent(this, ProxyActivity.class);
-//            intent.setComponent(new ComponentName(info.getPackageName(),info.getPackageName() + "." + info.getClassName()));
-            intent.putExtra("PLUGIN", info);
-            startActivity(intent);
+            loadApp(info);
         }
         else{
             showMsg("权限问题！！");
@@ -103,29 +94,29 @@ public class MainActivity extends ShellActivity {
 
     }
 
-    private boolean isVmArt(){
-        String vmVersion = System.getProperty("java.vm.version");
-        return (Build.VERSION.SDK_INT >= 21 || isVmArt(vmVersion));
-    }
-
-    private boolean isVmArt(String versionString) {
-        boolean isArt = false;
-        if (versionString != null) {
-            Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
-            if (matcher.matches()) {
-                try {
-                    int major = Integer.parseInt(matcher.group(1));
-                    int minor = Integer.parseInt(matcher.group(2));
-                    isArt = (major > 2)
-                            || ((major == 2)
-                            && (minor >= 1));
-                } catch (NumberFormatException e) {
-                    // let isMultidexCapable be false
-                }
-            }
-        }
-        return isArt;
-    }
+//    private boolean isVmArt(){
+//        String vmVersion = System.getProperty("java.vm.version");
+//        return (Build.VERSION.SDK_INT >= 21 || isVmArt(vmVersion));
+//    }
+//
+//    private boolean isVmArt(String versionString) {
+//        boolean isArt = false;
+//        if (versionString != null) {
+//            Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
+//            if (matcher.matches()) {
+//                try {
+//                    int major = Integer.parseInt(matcher.group(1));
+//                    int minor = Integer.parseInt(matcher.group(2));
+//                    isArt = (major > 2)
+//                            || ((major == 2)
+//                            && (minor >= 1));
+//                } catch (NumberFormatException e) {
+//                    // let isMultidexCapable be false
+//                }
+//            }
+//        }
+//        return isArt;
+//    }
 
     private void showMsg(String msg){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
@@ -270,7 +261,7 @@ public class MainActivity extends ShellActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onLoadApk(pluginInfo);
+                    loadApp(pluginInfo);
                 }
             });
 
@@ -300,6 +291,5 @@ public class MainActivity extends ShellActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.exit(0);
     }
 }

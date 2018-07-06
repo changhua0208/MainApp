@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:name="com.jch.main.KotApplication"
+        android:name="com.jch.main.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,7 +24,7 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="LuyOPlVVv25Z4BONrT6pMX0C6Gb99Khf" />
 
-        <activity android:name="com.jch.main.KotMainActivity">
+        <activity android:name="com.jch.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
