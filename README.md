@@ -63,7 +63,7 @@ dependencies {
 }
 ```
 
-3. 修改MainActivity 继承 ProxyActivity
+3. 修改MainActivity 继承 PluginActivity
 
 ```java
 public class MainActivity extends PluginActivity {
