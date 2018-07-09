@@ -1,13 +1,9 @@
 package com.jch.main;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jch.plugin.ShellActivity;
-import com.jch.plugin.axml.AXmlHolder;
 import com.jch.plugin.model.PluginInfo;
 import com.jch.utils.FileHelper;
 
@@ -34,11 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-public class MainActivity extends ShellActivity {
+public class MainActivity extends ShellActivity  {
 
     private boolean accessable = false;
-    private static final int PERMISSION_CODE = 100;
+    private static final int RC_STORAGE_RW = 100;
     private List<PluginInfo> pluginInfos = new ArrayList<>();
     private RecyclerView listView;
     private PluginListAdapter adapter;
@@ -51,72 +45,11 @@ public class MainActivity extends ShellActivity {
         listView = (RecyclerView) findViewById(R.id.rv_plugin_list);
         listView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new PluginListAdapter();
+        //从xml中读取插件信息
+        loadPlugins();
         listView.setAdapter(adapter);
-
-        //dalvik ，2.2开始，采用jit策略，优化dvm，4.4 dvm与art共存 5.0 只余下采用aot策略的art
-        //isVmArt();
-
-        checkPermission();
     }
 
-    private void checkPermission(){
-        if(Build.VERSION.SDK_INT >= 23) {
-            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-            if (checkPermissionAllGranted(permissions)) {
-                accessable = true;
-                loadPlugins();
-                adapter.notifyDataSetChanged();
-                for (PluginInfo info : pluginInfos) {
-                    preparePlugin(info);
-                }
-            } else {
-                ActivityCompat.requestPermissions(this, permissions, PERMISSION_CODE);
-            }
-        }
-        else{
-            accessable = true;
-            loadPlugins();
-            adapter.notifyDataSetChanged();
-            for (PluginInfo info : pluginInfos) {
-                preparePlugin(info);
-                AXmlHolder.init(info);
-            }
-        }
-    }
-
-    public void onLoadApp(PluginInfo info ){
-        if(accessable) {
-            loadApp(info);
-        }
-        else{
-            showMsg("权限问题！！");
-        }
-
-    }
-
-//    private boolean isVmArt(){
-//        String vmVersion = System.getProperty("java.vm.version");
-//        return (Build.VERSION.SDK_INT >= 21 || isVmArt(vmVersion));
-//    }
-//
-//    private boolean isVmArt(String versionString) {
-//        boolean isArt = false;
-//        if (versionString != null) {
-//            Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
-//            if (matcher.matches()) {
-//                try {
-//                    int major = Integer.parseInt(matcher.group(1));
-//                    int minor = Integer.parseInt(matcher.group(2));
-//                    isArt = (major > 2)
-//                            || ((major == 2)
-//                            && (minor >= 1));
-//                } catch (NumberFormatException e) {
-//                    // let isMultidexCapable be false
-//                }
-//            }
-//        }
-//        return isArt;
-//    }
 
     private void showMsg(String msg){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
@@ -130,20 +63,6 @@ public class MainActivity extends ShellActivity {
             }
         }
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == PERMISSION_CODE){
-            accessable = true;
-            loadPlugins();
-            adapter.notifyDataSetChanged();
-            for(PluginInfo info : pluginInfos) {
-                preparePlugin(info);
-                AXmlHolder.init(info);
-            }
-        }
     }
 
     private File createDirIfNotExists(String name){
@@ -160,11 +79,8 @@ public class MainActivity extends ShellActivity {
     }
 
     private void preparePlugin(PluginInfo info){
-
         File apkDir = createDirIfNotExists(info.getApkPath());
-        //File dexOutput = createDirIfNotExists("dexOutput");
         File file = new File(info.getApkUri());
-
         if(file.exists()){
             file.delete();
         }
@@ -176,7 +92,6 @@ public class MainActivity extends ShellActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void loadPlugins(){
@@ -206,6 +121,7 @@ public class MainActivity extends ShellActivity {
                                     .setPackageName(packageName)
                                     .setParent(this.getClass().getName())
                                     .create();
+                            preparePlugin(pluginInfo);
                             pluginInfos.add(pluginInfo);
                         }
                         break;
@@ -265,7 +181,6 @@ public class MainActivity extends ShellActivity {
                 }
             });
 
-            //holder.img.setIm
         }
 
         @Override

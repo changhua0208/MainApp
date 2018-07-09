@@ -71,7 +71,6 @@ android.applicationVariants.all { variant ->
     def buildType = variant.name.capitalize()
     def assembleTask = tasks.findByName("assemble${buildType}")
     def copyTask = tasks.findByName("copyPlugins${buildType}")
-    println buildType
     //只有在有宿主程序运行时，才需要copy
     if(isMainApp()){
         assembleTask.finalizedBy copyTask

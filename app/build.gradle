@@ -57,6 +57,7 @@ dependencies {
     api dep.okhttp3
     api dep.fastjson
     api dep.depKotlin
+    implementation dep.easyPermissions
 }
 repositories {
     mavenCentral()

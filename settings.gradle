@@ -1,1 +1,1 @@
-include ':app', ':test', ':plugin', ':Utils'
+include ':app', ':test', ':plugin', ':Utils', ':test2'

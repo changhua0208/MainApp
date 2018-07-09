@@ -1,9 +1,9 @@
 package com.jch.plugin;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Environment;
 
 import com.jch.plugin.axml.AXmlHolder;
 import com.jch.plugin.hook.AMSHookHelper;
@@ -27,7 +27,7 @@ public class ShellActivity extends Activity {
 
     //插件文件根路径
     public String getPluginRootPath(){
-        return Environment.getExternalStorageDirectory().getAbsolutePath();
+        return getDir("tmp_apks", Context.MODE_PRIVATE).getAbsolutePath();
     }
 
     public void loadApp(final PluginInfo info){

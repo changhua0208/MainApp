@@ -3,4 +3,5 @@
     <Plugin name="test" packageName="com.jch.test" launcher="MainActivity" apkPath="apk" nativeLib="lib" icon="mipmap/ic_launcher"/>
     <Plugin name="shape" packageName="com.jch.shape" launcher="MainActivity" apkPath="apk" nativeLib="lib" icon="mipmap/ic_launcher"/>
     <!--<Plugin name="baidu" packageName="baidumapsdk.demo" launcher="BMapApiDemoMain" apkPath="apk" nativeLib="lib" icon="mipmap/ic_launcher"/>-->
+    <Plugin name="test2" packageName="com.jch.test2" launcher="MainActivity" apkPath="apk" nativeLib="lib" icon="mipmap/ic_launcher"/>
 </Plugins>

@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+//生成的apk名称
+ext.apkName="test2"
+//在as中的module名称
+ext.moduleName="test2"
+//插件拷贝以及implementationInner方法定义
+apply from:"../common.gradle"
+//编译环境，公共依赖
+apply from:"../config.gradle"
+//application id
+def appId="com.jch.test2"
+
+android {
+    //统一编译环境
+    compileSdkVersion ac.compileSdkVersion
+    buildToolsVersion ac.buildToolsVersion
+
+    defaultConfig {
+        //module单独运行时有用，当做插件时，没有作用
+        applicationId "${appId}"
+        minSdkVersion ac.minSdkVersion
+        targetSdkVersion ac.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation dep.appcompatV7
+    //插件依赖工程，在test2只当插件是，参与编译，但是不参与打包
+    implementationInner dep.plugin
+}

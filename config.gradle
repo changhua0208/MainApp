@@ -1,6 +1,6 @@
 ext {
     ac = [
-            'compileSdkVersion': 24,
+            'compileSdkVersion': 26,
             'buildToolsVersion': "26.0.2",
             'minSdkVersion'    : 14,
             'targetSdkVersion' : 24,
@@ -11,15 +11,16 @@ ext {
     ]
 
     dep = [
-            'appcompatV7'      : 'com.android.support:appcompat-v7:24.+',
-            'recycler'         : 'com.android.support:recyclerview-v7:24.+',
-            'utils'            : project(':Utils'),
-            'plugin'           : project(':plugin'),
-            "okhttp3"          : 'com.squareup.okhttp3:okhttp:3.3.1',
-            "fastjson"         : 'com.alibaba:fastjson:1.1.68.android',
-            "butterKnife"      : 'com.jakewharton:butterknife:8.8.1',
-            "butterKnifeApt"   : 'com.jakewharton:butterknife-compiler:8.8.1',
-            "depKotlin"        : 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.21'
+            'appcompatV7'                                         : 'com.android.support:appcompat-v7:26.+',
+            'recycler'                                            : 'com.android.support:recyclerview-v7:26.+',
+            'utils'                                               : project(':Utils'),
+            'plugin'                                              : project(':plugin'),
+            "okhttp3"                                             : 'com.squareup.okhttp3:okhttp:3.3.1',
+            "fastjson"                                            : 'com.alibaba:fastjson:1.1.68.android',
+            "butterKnife"                                         : 'com.jakewharton:butterknife:8.8.1',
+            "butterKnifeApt"                                      : 'com.jakewharton:butterknife-compiler:8.8.1',
+            "depKotlin"                                           : 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.21',
+            "easyPermissions"                                     : 'pub.devrel:easypermissions:1.2.0'
     ]
 
 
