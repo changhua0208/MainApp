@@ -2,7 +2,7 @@ ext {
     ac = [
             'compileSdkVersion': 26,
             'buildToolsVersion': "26.0.2",
-            'minSdkVersion'    : 14,
+            'minSdkVersion'    : 16,
             'targetSdkVersion' : 24,
     ]
 
@@ -20,7 +20,8 @@ ext {
             "butterKnife"                                         : 'com.jakewharton:butterknife:8.8.1',
             "butterKnifeApt"                                      : 'com.jakewharton:butterknife-compiler:8.8.1',
             "depKotlin"                                           : 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.21',
-            "easyPermissions"                                     : 'pub.devrel:easypermissions:1.2.0'
+            "easyPermissions"                                     : 'pub.devrel:easypermissions:1.2.0',
+            "multidex"                                             : 'com.android.support:multidex:1.0.1'
     ]
 
 

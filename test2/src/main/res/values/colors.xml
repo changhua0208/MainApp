@@ -3,4 +3,14 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="actionbar_bg">#E0E0E0</color>
+    <color name="home_title">#424242</color>
+    <color name="home_bottom_bg">@color/actionbar_bg</color>
+    <color name="home_main_bg">#FAFAFA</color>
+    <color name="conversation_title">@color/home_title</color>
+    <color name="conversation_last_msg">#9E9E9E</color>
+    <color name="conversation_last_time">#E0E0E0</color>
+    <color name="item_selected">#EEEEEE</color>
+    <color name="home_bottom_title_selected">#1296db</color>
+    <color name="home_bottom_title">@color/conversation_last_msg</color>
 </resources>

@@ -23,6 +23,8 @@ android {
                 cppFlags ""
             }
         }
+
+        multiDexEnabled true
     }
     buildTypes {
         debug{
@@ -52,6 +54,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation dep.utils
     implementation dep.plugin
+    implementation dep.multidex
     api dep.appcompatV7
     api dep.recycler
     api dep.okhttp3

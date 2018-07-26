@@ -1,3 +1,4 @@
+
 apply plugin: 'com.android.application'
 
 //生成的apk名称
@@ -37,9 +38,17 @@ android {
 
 }
 
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation dep.appcompatV7
     //插件依赖工程，在test2只当插件是，参与编译，但是不参与打包
     implementationInner dep.plugin
+    implementation  dep.butterKnife
+    annotationProcessor dep.butterKnifeApt
+
+    implementation dep.recycler
+    implementation dep.appcompatV7
+    implementation 'com.mikhaellopez:circularimageview:3.1.0'
+    //AARCompileStart
 }
+

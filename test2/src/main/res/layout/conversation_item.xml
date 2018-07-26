@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/general_click_bg"
+    android:clickable="true">
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/img_person"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:padding="8dp"
+        app:civ_border_color="#EEEEEE"
+        app:civ_border_width="2dp"
+        app:civ_shadow="true"
+        app:civ_shadow_radius="10"
+        app:civ_shadow_color="#8BC34A"
+        android:src="@drawable/default_persion"
+
+        />
+
+    <TextView
+        android:id="@+id/tv_conversation_last_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textColor="@color/conversation_last_time"
+        android:text="hello"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"/>
+
+    <TextView
+        android:id="@+id/tv_conversation_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/conversation_title"
+        android:text="hello"
+        android:layout_toRightOf="@id/img_person"
+        android:layout_toLeftOf="@id/tv_conversation_last_time"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:textSize="16sp"
+        android:gravity="left|center_vertical"
+        android:singleLine="true"
+        />
+
+    <TextView
+        android:id="@+id/tv_conversation_last_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/conversation_last_msg"
+        android:text="hello"
+        android:layout_toRightOf="@id/img_person"
+        android:layout_below="@id/tv_conversation_title"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:textSize="12sp"
+        />
+    <View
+        android:layout_alignLeft="@id/tv_conversation_title"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="@color/item_selected"
+
+        />
+</RelativeLayout>

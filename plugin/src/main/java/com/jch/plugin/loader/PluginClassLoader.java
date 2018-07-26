@@ -35,6 +35,17 @@ class PluginClassLoader extends DexClassLoader {
      */
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+//        Class<?> clazz = null;
+//        try {
+//            clazz = getParent().loadClass(name);
+//        }
+//        catch (Exception e){
+//
+//        }
+//        if(clazz == null){
+//            clazz = super.findClass(name);
+//        }
+//        return clazz;
         return super.findClass(name);
     }
 

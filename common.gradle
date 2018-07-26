@@ -1,4 +1,6 @@
 apply from:"../config.gradle"
+apply plugin: 'MyPlugin'
+
 
 def isMainApp(){
     println "$runtime code ${runtime.hashCode()}"
@@ -27,7 +29,6 @@ ext.apiInner = { dependency ->
     }
 }
 
-
 android.applicationVariants.all { variant ->
     variant.outputs.all {
         outputFileName = "${apkName}.apk"
@@ -36,7 +37,7 @@ android.applicationVariants.all { variant ->
 
 task copyPluginsDebug {
     doLast {
-        println "${rootProject.rootDir}/${moduleName}/build/outputs/apk/debug/${apkName}.apk"
+        println "copy ${rootProject.rootDir}/${moduleName}/build/outputs/apk/debug/${apkName}.apk to assert"
         copy {
             from "${rootProject.rootDir}/${moduleName}/build/outputs/apk/debug/${apkName}.apk"
             into "${rootProject.rootDir}/app/src/main/assets"
@@ -47,7 +48,7 @@ task copyPluginsDebug {
 
 task copyPluginsRelease {
     doLast {
-        println "${rootProject.rootDir}/${moduleName}/build/outputs/apk/release/${apkName}.apk"
+        println "copy ${rootProject.rootDir}/${moduleName}/build/outputs/apk/release/${apkName}.apk to assert"
         copy {
             from "${rootProject.rootDir}/${moduleName}/build/outputs/apk/release/${apkName}.apk"
             into "${rootProject.rootDir}/app/src/main/assets"
@@ -63,7 +64,8 @@ task deletePlugin(){
         delete "${rootProject.rootDir}/app/src/main/assets/${apkName}"
     }
 }
-//android.applicationVariants.
+
+Project.getClassLoader().loadClass(Integer.class.getName())
 
 clean.finalizedBy deletePlugin
 
@@ -71,8 +73,140 @@ android.applicationVariants.all { variant ->
     def buildType = variant.name.capitalize()
     def assembleTask = tasks.findByName("assemble${buildType}")
     def copyTask = tasks.findByName("copyPlugins${buildType}")
+
+    /*println "compileTask wakaka ${variant.getName().capitalize()}"
+    //寻找pre${buildType}Build任务
+    def prepareBuildTask = project.tasks.findByName("pre${variant.getName().capitalize()}Build")
+    //如果task存在，则进行处理
+    if (prepareBuildTask) {
+        println "find prepareBuildTask $prepareBuildTask"
+        //是否需要重定向执行的action内容
+        boolean needRedirectAction = false
+        //迭代该任务的actions，如果存在AppPreBuildTask这个名字，则将其移除，标记重定向标记为true
+        prepareBuildTask.actions.iterator().with {actionsIterator ->
+            actionsIterator.each {action ->
+                //取action名字，判断是否包含AppPreBuildTask字符串
+                if (action.getActionClassName().contains("AppPreBuildTask")) {
+                    //移除，并进行标记需要重定向实现
+                    actionsIterator.remove()
+                    needRedirectAction = true
+                }
+            }
+        }
+        println "find needRedirectAction $needRedirectAction"
+        //如果重定向标记为true，则将原有逻辑拷贝下来，用反射实现一遍，然后将抛异常的部分修改为输出日志
+        if (needRedirectAction) {
+            //添加新的action，代替被移除的action执行逻辑
+            prepareBuildTask.doLast {
+                println " prepareBuildTask.doLast "
+                //下面一大坨是兼容处理，3.0.0+的版本是compileManifests和runtimeManifests，并且在配置阶段这两个值已经被赋值，2.5.0+预览版的代码是compileClasspath和runtimeClasspath，其值在执行时通过variantScope获取
+                def compileManifests = null
+                def runtimeManifests = null
+                //Class test = project.getClass().getClassLoader().loadClass("com.android.build.gradle.internal.BuildSessionImpl")
+
+                Class appPreBuildTaskClass = project.getClass().getClassLoader().loadClass("com.android.build.gradle.internal.tasks.AppPreBuildTask")
+
+                try {
+                    //3.0.0+的版本直接取compileManifests和runtimeManifests字段的值
+                    Field compileManifestsField = appPreBuildTaskClass.getDeclaredField("compileManifests")
+                    Field runtimeManifestsField = appPreBuildTaskClass.getDeclaredField("runtimeManifests")
+                    compileManifestsField.setAccessible(true)
+                    runtimeManifestsField.setAccessible(true)
+                    compileManifests = compileManifestsField.get(prepareBuildTask)
+                    runtimeManifests = runtimeManifestsField.get(prepareBuildTask)
+                } catch (Exception e) {
+                    try {
+                        //2.5.0+的版本，由于其值是在run阶段赋值的，因此我们需要换一个方式获取，通过variantScope去拿对应的内容
+                        Field variantScopeField = appPreBuildTaskClass.getDeclaredField("variantScope")
+                        variantScopeField.setAccessible(true)
+                        def variantScope = variantScopeField.get(prepareBuildTask)
+                        //为了兼容，需要避免import导包，这里使用全类名路径进行引用，且使用注释消除ide警告
+                        //noinspection UnnecessaryQualifiedReference
+                        compileManifests = variantScope.getArtifactCollection(com.android.build.gradle.internal.publishing.AndroidArtifacts.ConsumedConfigType.COMPILE_CLASSPATH, com.android.build.gradle.internal.publishing.AndroidArtifacts.ArtifactScope.ALL, com.android.build.gradle.internal.publishing.AndroidArtifacts.ArtifactType.MANIFEST)
+                        runtimeManifests = variantScope.getArtifactCollection(com.android.build.gradle.internal.publishing.AndroidArtifacts.ConsumedConfigType.RUNTIME_CLASSPATH, com.android.build.gradle.internal.publishing.AndroidArtifacts.ArtifactScope.ALL, com.android.build.gradle.internal.publishing.AndroidArtifacts.ArtifactType.MANIFEST)
+                    } catch (Exception e1) {
+                    }
+                }
+                try {
+                    //下面还原原有action的逻辑
+                    //获取编译期和运行期android aar依赖
+                    Set<ResolvedArtifactResult> compileArtifacts = compileManifests.getArtifacts()
+                    Set<ResolvedArtifactResult> runtimeArtifacts = runtimeManifests.getArtifacts()
+                    //创建Map
+                    Map<String, String> runtimeIds = new HashMap<>(runtimeArtifacts.size())
+                    //原有的handleArtifact函数，这里改成了闭包
+                    def handleArtifact = {id, consumer ->
+                        if (id instanceof ProjectComponentIdentifier) {
+                            consumer(((ProjectComponentIdentifier) id).getProjectPath().intern(), "")
+                        } else if (id instanceof ModuleComponentIdentifier) {
+                            ModuleComponentIdentifier moduleComponentId = (ModuleComponentIdentifier) id
+                            consumer(
+                                    moduleComponentId.getGroup() + ":" + moduleComponentId.getModule(),
+                                    moduleComponentId.getVersion())
+                        } else {
+                            getLogger()
+                                    .warn(
+                                    "Unknown ComponentIdentifier type: "
+                                            + id.getClass().getCanonicalName())
+                        }
+                    }
+                    //处理原有的for循环逻辑，将runtime部分放入runtimeIds的map，键是坐标，值为版本号
+                    runtimeArtifacts.each {def artifact ->
+                        def runtimeId = artifact.getId().getComponentIdentifier()
+                        def putMap = {def key, def value ->
+                            runtimeIds.put(key, value)
+                        }
+                        handleArtifact(runtimeId, putMap)
+                    }
+                    //遍历compile依赖部分的内容，判断是否在runtime依赖中存在版本号，如果不存在，则会抛异常
+                    compileArtifacts.each {def artifact ->
+                        final ComponentIdentifier compileId = artifact.getId().getComponentIdentifier()
+                        def checkCompile = {def key, def value ->
+                            String runtimeVersion = runtimeIds.get(key)
+                            if (runtimeVersion == null) {
+                                String display = compileId.getDisplayName()
+                                //这里抛的异常，修改为打日志，仅此一处修改
+                                project.logger.lifecycle(
+                                        "[providedAar] WARNING: providedAar has been enabled in com.android.application you can ignore 'Android dependency '"
+                                                + display
+                                                + "' is set to compileOnly/provided which is not supported'")
+                            } else if (!runtimeVersion.isEmpty()) {
+                                // compare versions.
+                                if (!runtimeVersion.equals(value)) {
+                                    throw new RuntimeException(
+                                            String.format(
+                                                    "Android dependency '%s' has different version for the compile (%s) and runtime (%s) classpath. You should manually set the same version via DependencyResolution",
+                                                    key, value, runtimeVersion));
+                                }
+                            }
+                        }
+                        handleArtifact(compileId, checkCompile)
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }*/
     //只有在有宿主程序运行时，才需要copy
     if(isMainApp()){
         assembleTask.finalizedBy copyTask
     }
+}
+
+ext.AARCompileStart = {
+    configurations.AARCompile.files.collect {
+        if (it.absolutePath.endsWith(".jar")) {
+            fileList.add(it.absoluteFile)
+
+            compileOnly project.files(it.absolutePath)
+
+            System.out.println("From AARCompile **===> " + it.absolutePath)
+            return
+        }
+        List<File> tempRoot = extractAarTransform.transform(it.absoluteFile)
+        List<File> tempAAR2JarFile = aarTransform.transform(tempRoot.get(0))
+        project.dependencies.add("compileOnly", project.files(tempAAR2JarFile.toArray()))
+    }
+
 }

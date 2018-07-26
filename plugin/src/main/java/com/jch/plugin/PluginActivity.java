@@ -3,6 +3,7 @@ package com.jch.plugin;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Application;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -255,6 +256,10 @@ public abstract class PluginActivity {
 
     public void unregisterReceiver(BroadcastReceiver receiver){
         mContext.unregisterReceiver(receiver);
+    }
+
+    public FragmentManager getFragmentManager(){
+        return ((Activity)mContext).getFragmentManager();
     }
 
 }
